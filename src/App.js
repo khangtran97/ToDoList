@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import TodoList from './components/TodoList';
+import ListTask from './components/List'
+import { TASK_STATUS } from './common/constant'
 
 class App extends Component {
   constructor(props) {
@@ -10,11 +11,16 @@ class App extends Component {
         { id: '1', name: 'Task1', isCompleted: false, isDeleted: false },
         { id: '2', name: 'Task2', isCompleted: false, isDeleted: false }
       ],
-      name: ''
+      name: '',
+      filterList: []
     };
 
     this.isChangedName = this.isChangedName.bind(this);
     this.addTask = this.addTask.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({filterList: [...this.state.tasks]})
   }
 
   addTask = (event) => {
@@ -22,44 +28,83 @@ class App extends Component {
     const currentTasks = this.state.tasks;
     let id = this.state.name + Math.floor(Math.random() * 10);
     currentTasks.push({ id: id, name: this.state.name, isCompleted: false, isDeleted: false });
-    this.setState({ tasks: currentTasks });
-
+    this.setState({ tasks: currentTasks }, () => this.refetchTasksList());
   }
 
-  deleteTaskHandler = taskIndex => {
-    // const persons = this.state.persons.slice();
+
+
+  // deleteTaskHandler = taskIndex => {
+  //   // const persons = this.state.persons.slice();
+  //   const tasks = [...this.state.tasks];
+  //   tasks.splice(taskIndex, 1);
+  //   this.setState({ tasks: tasks });
+  // };
+
+  addClassDelete = taskIndex => {
     const tasks = [...this.state.tasks];
     tasks[taskIndex].isDeleted = true;
-    tasks.splice(taskIndex, 1);
     this.setState({ tasks: tasks });
-  };
+    debugger
+    setTimeout(() => {
+      const tasks = [...this.state.tasks];
+      tasks.splice(taskIndex, 1);
+      debugger
+      // this.setState({ tasks: tasks });
+      debugger
+      this.setState({ tasks }, () => this.refetchTasksList());
+    }, 500);
+  }
 
   completedTaskHandler = id => {
+    debugger
     const taskIndex = this.state.tasks.findIndex(t => {
       return t.id === id;
     });
 
-    const task = { ...this.state.tasks[taskIndex] }
+    const currentTask = { ...this.state.tasks[taskIndex] }
 
-    if (task.isCompleted === false) {
-      task.isCompleted = true;
-      const tasks = [...this.state.tasks];
-      tasks[taskIndex] = task;
-
-      this.setState({ tasks: tasks });
+    if (currentTask.isCompleted === false) {
+      debugger
+      currentTask.isCompleted = true;
     } else {
-      task.isCompleted = false;
-      const tasks = [...this.state.tasks];
-      tasks[taskIndex] = task;
-
-      this.setState({ tasks: tasks });
+      debugger
+      currentTask.isCompleted = false;
     }
 
+    const cloneTasks = [...this.state.tasks];
+    cloneTasks[taskIndex] = currentTask;
+    debugger
+    this.setState({ tasks: cloneTasks }, () => this.refetchTasksList());
+
+    
+  }
+
+  refetchTasksList = () => {
+    this.setState({filterList: [...this.state.tasks]})
   }
 
   isChangedName = (e) => {
     this.setState({
       name: e.target.value
+    })
+  }
+
+  renderFilterList = (tasks, filterCondition) => {
+    const filterConditionParseToInt = parseInt(filterCondition);
+    if (filterConditionParseToInt === 1) return tasks;
+    const isCompletedTasks = filterConditionParseToInt === 2;
+    const abc = tasks.filter(task => task.isCompleted === isCompletedTasks);
+    debugger
+    return abc;
+  }
+
+  onChangeFilterHandler = changedValue => {
+    const { tasks } = this.state;
+    const filterCondition = changedValue.target.value
+    console.log('changedValue', filterCondition);
+    
+    this.setState({
+      filterList: this.renderFilterList(tasks, filterCondition)
     })
   }
 
@@ -76,31 +121,22 @@ class App extends Component {
             <i className="fas fa-plus-square"></i>
           </button>
           <div className="select">
-            <select name="todos" className="filter-todo">
-              <option value="all">All</option>
-              <option value="completed">Completed</option>
-              <option value="uncompleted">Uncompleted</option>
+            <select name="todos" className="filter-todo" onChange={(value) => this.onChangeFilterHandler(value)}>
+              {
+                TASK_STATUS.map(taskStatus => (
+                  <option key={taskStatus.id} value={taskStatus.id}>
+                    {taskStatus.name}
+                  </option>
+                ))
+              }
             </select>
           </div>
         </form>
-        <div className="todo-container">
-          <ul className="todo-list">
-            {
-              this.state.tasks.map((task, index) =>
-                <TodoList
-                  name={task.name}
-                  key={task.id}
-                  id={task.id}
-                  completed={task.isCompleted}
-                  deleted={task.isDeleted}
-                  index={index}
-                  delClicked={taskIndex => this.deleteTaskHandler(taskIndex)}
-                  completedClicked={this.completedTaskHandler}
-                />
-              )
-            }
-          </ul>
-        </div>
+        <ListTask
+          addClassDelete={this.addClassDelete}
+          completedTaskHandler={this.completedTaskHandler}
+          taskslist={this.state.filterList}
+        />
       </div>
     );
   }

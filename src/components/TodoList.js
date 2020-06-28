@@ -9,18 +9,18 @@ class TodoList extends Component {
 
     onDelClicked = () => {
         const { index, delClicked } = this.props;
-        debugger
         delClicked(index);
     }
 
     onCompleted = () => {
         const { id, completedClicked } = this.props;
+        debugger
         completedClicked(id);
     }
     render() {
         let classname = '';
         if (this.props.deleted) {
-            classname = 'fall';
+            classname = 'todo fall';
         } else if (this.props.completed) {
             classname = 'todo completed';
         } else {
