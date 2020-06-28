@@ -14,7 +14,6 @@ class TodoList extends Component {
 
     onCompleted = () => {
         const { id, completedClicked } = this.props;
-        debugger
         completedClicked(id);
     }
     render() {

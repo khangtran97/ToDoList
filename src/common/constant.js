@@ -1,7 +1,7 @@
 export const STATUS = {
-    ALL: 'all',
-    COMPLETED: 'completed',
-    UNCOMPLETED: 'uncompleted'
+    ALL: 'All',
+    COMPLETED: 'Completed',
+    UNCOMPLETED: 'Uncompleted'
 }
 
 export const TASK_STATUS = [

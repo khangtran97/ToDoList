@@ -44,19 +44,15 @@ class App extends Component {
     const tasks = [...this.state.tasks];
     tasks[taskIndex].isDeleted = true;
     this.setState({ tasks: tasks });
-    debugger
     setTimeout(() => {
       const tasks = [...this.state.tasks];
       tasks.splice(taskIndex, 1);
-      debugger
-      // this.setState({ tasks: tasks });
-      debugger
+
       this.setState({ tasks }, () => this.refetchTasksList());
     }, 500);
   }
 
   completedTaskHandler = id => {
-    debugger
     const taskIndex = this.state.tasks.findIndex(t => {
       return t.id === id;
     });
@@ -64,16 +60,13 @@ class App extends Component {
     const currentTask = { ...this.state.tasks[taskIndex] }
 
     if (currentTask.isCompleted === false) {
-      debugger
       currentTask.isCompleted = true;
     } else {
-      debugger
       currentTask.isCompleted = false;
     }
 
     const cloneTasks = [...this.state.tasks];
     cloneTasks[taskIndex] = currentTask;
-    debugger
     this.setState({ tasks: cloneTasks }, () => this.refetchTasksList());
 
     
@@ -93,9 +86,8 @@ class App extends Component {
     const filterConditionParseToInt = parseInt(filterCondition);
     if (filterConditionParseToInt === 1) return tasks;
     const isCompletedTasks = filterConditionParseToInt === 2;
-    const abc = tasks.filter(task => task.isCompleted === isCompletedTasks);
-    debugger
-    return abc;
+    const filtered = tasks.filter(task => task.isCompleted === isCompletedTasks);
+    return filtered;
   }
 
   onChangeFilterHandler = changedValue => {
